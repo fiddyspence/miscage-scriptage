@@ -4,19 +4,30 @@ TASKSDIR="/opt/puppet/share/puppet-dashboard/lib/tasks"
 RAKECMD="/opt/puppet/bin/rake"
 RACKLIST="node:list RACK_ENV=production"
 RAKERM="node:del RACK_ENV=production"
-PUPPETCMD="/opt/puppet/bin/puppet cert"
-PUPPETLIST="list"
-PUPPETRM="clean"
+PUPPETCMD="/opt/puppet/bin/puppet"
+PUPPETLIST="cert list"
+PUPPETRM="cert clean"
+EXITCODE=0
 
 if [ -z $1 ]; then
   echo "You must supply a node to remove from the CA and dashboard"
-  exit 1
+  exit 99
 fi
 NODE=$NODE
 
+if ! [ -f $RAKECMD ]; then
+  echo "${RAKECMD} doesn't exist - exiting"
+  exit 99
+fi
+
+if ! [ -f $RAKECMD ]; then
+  echo "${RAKECMD} doesn't exist - exiting"
+  exit 99
+fi
+
 if ! [ -d $TASKSDIR ]; then
   echo "Directory ${TASKSDIR} doesn't exist - exiting"
-  exit 1 
+  exit 99
 fi
 
 cd $TASKSDIR
@@ -26,11 +37,12 @@ echo "Removing node from the dashboard"
 $RAKECMD $RACKLIST 2> /dev/null | grep "^${NODE}$"
 if [ $? -ne 0 ]; then
   echo "Could not find node ${NODE} in the dashboard - not attempting to remove"
+  $EXITCODE=$EXITCODE+1
 else
   $RAKECMD $RAKERM $NODE 
   if [ $? -ne 0 ]; then
     echo "Some error occurred - not continuing"
-    exit 1
+    $EXITCODE=$EXITCODE+2
   fi
 fi
 
@@ -39,12 +51,12 @@ echo "Removing puppet certificate"
 $PUPPETCMD $PUPPETLIST $NODE | grep "^${NODE}$"
 if [ $? -ne 0 ]; then 
   echo "Could not find certificate for node ${NODE} - not continuing"
-  exit 1
+  $EXITCODE=$EXITCODE+4
 else
   $PUPPETCMD $PUPPETRM $1
   if [ $? -ne 0 ]; then
     echo "Some error occurred - not continuing"
-    exit 1
+    $EXITCODE=$EXITCODE+8
   fi 
 fi
-exit 0
+exit $EXITCODE
