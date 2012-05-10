@@ -29,8 +29,8 @@ if ! [ -f $RAKECMD ]; then
   exit 99
 fi
 
-if ! [ -f $RAKECMD ]; then
-  echo "${RAKECMD} doesn't exist - exiting"
+if ! [ -f $PUPPETCMD ]; then
+  echo "${PUPPETCMD} doesn't exist - exiting"
   exit 99
 fi
 
