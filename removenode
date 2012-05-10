@@ -57,7 +57,7 @@ fi
 
 echo "Removing puppet certificate"
 
-$PUPPETCMD $PUPPETLIST $NODE | grep "^${NODE}$"
+$PUPPETCMD $PUPPETLIST $NODE | grep "^[+|\ ]\ ${NODE}\ "
 if [ $? -ne 0 ]; then
   echo "Could not find certificate for node ${NODE}"
   let EXITCODE=$EXITCODE+4
