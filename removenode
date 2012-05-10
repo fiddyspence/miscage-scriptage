@@ -1,4 +1,12 @@
 #!/bin/bash
+# Script to remove nodes from Puppet Enterprise dashboard and Puppet CA
+# Exit codes are cumulative:
+# 0 - no error
+# 1 - node not found in dashboard
+# 2 - node removal from dashboard failed
+# 4 - node not found in Puppet CA
+# 8 - node removal from CA failed
+# 99 - set up validation failed (utility missing etc)
 
 TASKSDIR="/opt/puppet/share/puppet-dashboard/lib/tasks"
 RAKECMD="/opt/puppet/bin/rake"
